@@ -1,5 +1,5 @@
 import unittest
-from htmlnode import HTMLNode
+from htmlnode import HTMLNode, LeafNode
 
 class TestHTMLNode(unittest.TestCase):
     def test_props_to_html_single(self):
@@ -35,6 +35,34 @@ class TestHTMLNode(unittest.TestCase):
         node = HTMLNode("p", "Hello test world", None, {"class": "Testing"})
         expected = "HTMLNode(tag=p, value=Hello test world, children=[], props={'class': 'Testing'})"
         self.assertEqual(repr(node), expected)
+
+
+class TestLeafNode(unittest.TestCase):
+    def test_leaf_node_empty_value(self):
+        node = LeafNode("p", "")
+        with self.assertRaises(ValueError):
+            node.to_html()
+    
+    def test_leaf_node_no_tag(self):
+        node = LeafNode(None, "This is a test")
+        expected = "This is a test"
+        self.assertEqual(node.to_html(), expected)
+
+    def test_leaf_node_tag(self):
+        node = LeafNode("p", "Hello test world")
+        expected = "<p>Hello test world</p>"
+        self.assertEqual(node.to_html(), expected)
+
+    def test_leaf_node_with_props(self):
+        node = LeafNode("a", "Click here", {"href": "https://testing.com"})
+        expected = '<a href="https://testing.com">Click here</a>'
+        self.assertEqual(node.to_html(), expected)
+
+    def test_leaf_node_multiple_props(self):
+        node = LeafNode("a", "Click here", {"href": "https://testing.com", "class": "link", "target": "_blank"})
+        expected = '<a href="https://testing.com" class="link" target="_blank">Click here</a>'
+        self.assertEqual(node.to_html(), expected)
+
 
 
 if __name__ == "__main__":
